@@ -11,6 +11,12 @@
   const desktop = document.querySelector('.desktop');
   visible(document.querySelector('[data-theme-select]'));
   if (matchMedia('(max-width: 700px)').matches) {
+    if (innerHeight > 600) {
+      for (const key of document.querySelectorAll('.phone-number-keys button')) visible(key);
+    }
+    for (const arrow of document.querySelectorAll('[data-phone-direction]')) {
+      assert(arrow.querySelector('svg[aria-hidden="true"]'), 'Directional arrows must not depend on emoji fonts');
+    }
     assert(desktop.clientHeight >= 140, 'Phone display is too short to use');
     assert(desktop.scrollHeight <= desktop.clientHeight + 1, 'Phone app menu must fit without scrolling');
     for (const icon of document.querySelectorAll('.desktop-icons [data-open]')) {
