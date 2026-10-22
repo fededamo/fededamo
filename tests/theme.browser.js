@@ -27,6 +27,17 @@
     document.querySelector('[data-start]').click();
     const menuAnimations = document.querySelector('#start-menu').getAnimations({ subtree: true });
     assert(reduced ? menuAnimations.length === 0 : menuAnimations.some((animation) => animation.animationName === 'window-open'), 'Start animation does not respect the motion preference');
+    const brand = document.querySelector('.start-brand');
+    const brandAnimation = brand.getAnimations()[0];
+    if (brandAnimation) {
+      brandAnimation.pause();
+      for (const time of [0, 80, 159]) {
+        brandAnimation.currentTime = time;
+        const matrix = new DOMMatrixReadOnly(getComputedStyle(brand).transform);
+        assert(matrix.a < -.99 && matrix.d < -.99, 'Start animation must preserve the vertical brand rotation');
+      }
+      brandAnimation.play();
+    }
     document.querySelector('[data-start]').click();
     document.querySelector('.desktop-icons [data-open="benvenuto"]').click();
   }

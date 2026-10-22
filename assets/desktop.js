@@ -49,8 +49,10 @@ function sync() {
     app.element.toggleAttribute('data-active', active === id);
     // Hidden background windows on mobile must also leave keyboard navigation.
     app.element.inert = app.state !== 'open' || (mobile.matches && active !== id);
-    app.task.hidden = app.state === 'closed';
-    app.task.setAttribute('aria-pressed', String(active === id));
+    if (app.task) {
+      app.task.hidden = app.state === 'closed';
+      app.task.setAttribute('aria-pressed', String(active === id));
+    }
     position(app);
   }
   phone.sync(active);

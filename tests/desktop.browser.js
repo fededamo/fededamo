@@ -1,4 +1,4 @@
-// Run on a fresh desktop page with agent-browser eval --stdin (see README).
+// Run on a fresh desktop page with agent-browser eval --stdin.
 (() => {
   const assert = (condition, message) => { if (!condition) throw Error(message); };
   const app = (id) => document.getElementById(id);
@@ -9,6 +9,7 @@
   assert(!mobile, 'Use phone.browser.js for the phone interface');
   assert(document.documentElement.hasAttribute('data-desktop-ready'), 'Desktop did not initialize');
   assert(active('benvenuto'), 'Welcome must be open initially');
+  assert(!document.querySelector('[data-task="benvenuto"]'), 'Welcome must not clutter the taskbar');
   assert([...document.querySelectorAll('h1')].filter((heading) => heading.getClientRects().length).length === 1, 'The desktop needs one visible primary heading');
   launch('progetti');
   launch('profilo');
