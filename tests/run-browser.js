@@ -1,0 +1,39 @@
+import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { preview } from 'vite';
+
+const session = `portfolio-test-${process.pid}`;
+function browser(args, input) {
+  return new Promise((resolve, reject) => {
+    const child = spawn('agent-browser', ['--session', session, ...args], { stdio: ['pipe', 'pipe', 'pipe'] });
+    let output = '';
+    child.stdout.on('data', (data) => { output += data; });
+    child.stderr.on('data', (data) => { output += data; });
+    child.on('error', reject);
+    child.on('close', (code) => code === 0 ? resolve(output.trim()) : reject(Error(output || `agent-browser exited ${code}`)));
+    child.stdin.end(input);
+  });
+}
+
+const server = await preview({ preview: { host: '127.0.0.1', port: 0, open: false } });
+try {
+  const url = `http://127.0.0.1:${server.httpServer.address().port}`;
+  for (const [width, height] of [[1440, 900], [844, 320], [701, 600], [700, 600], [390, 844], [568, 320]]) {
+    await browser(['set', 'viewport', String(width), String(height)]);
+    for (const path of ['/', '/en/']) {
+      await browser(['open', url + path]);
+      console.log(path, await browser(['eval', '--stdin'], await readFile('tests/layout.browser.js', 'utf8')));
+      if (width === 1440 || width === 390) {
+        await browser(['open', url + path]);
+        console.log(await browser(['eval', '--stdin'], await readFile(`tests/${width === 1440 ? 'desktop' : 'phone'}.browser.js`, 'utf8')));
+        for (const theme of ['light', 'dark']) {
+          await browser(['eval', `document.documentElement.dataset.theme = '${theme}'`]);
+          console.log(await browser(['eval', '--stdin'], await readFile('tests/palette.browser.js', 'utf8')));
+        }
+      }
+    }
+  }
+} finally {
+  await browser(['close']).catch((error) => console.error(error.message));
+  await new Promise((resolve) => server.httpServer.close(resolve));
+}
