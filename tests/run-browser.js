@@ -18,7 +18,7 @@ function browser(args, input) {
 const server = await preview({ preview: { host: '127.0.0.1', port: 0, open: false } });
 try {
   const url = `http://127.0.0.1:${server.httpServer.address().port}`;
-  for (const [width, height] of [[1440, 900], [844, 320], [701, 600], [700, 600], [390, 844], [568, 320], [320, 568]]) {
+  for (const [width, height] of [[1440, 900], [844, 320], [701, 600], [700, 600], [390, 844], [568, 320], [320, 568], [320, 320], [375, 667], [360, 720], [360, 721], [390, 520], [390, 521]]) {
     await browser(['set', 'viewport', String(width), String(height)]);
     for (const path of ['/', '/en/']) {
       await browser(['open', url + path]);

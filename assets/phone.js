@@ -13,8 +13,8 @@ export function mountPhone({ desktop, mobile, open, home }) {
   const phoneName = desktop.querySelector('[data-phone-name]');
   const english = document.documentElement.lang === 'en';
   const text = english
-    ? { back: 'Back', theme: 'Change theme', up: 'Scroll up', down: 'Scroll down', language: 'Change language', menu: 'Menu', open: 'Open selected app', unassigned: 'No app assigned' }
-    : { back: 'Indietro', theme: 'Cambia tema', up: 'Scorri verso l’alto', down: 'Scorri verso il basso', language: 'Cambia lingua', menu: 'Menu', open: 'Apri la selezione', unassigned: 'Nessuna app assegnata' };
+    ? { theme: 'Change theme', up: 'Scroll up', down: 'Scroll down', language: 'Change language', menu: 'Menu', open: 'Open selected app', shortOpen: 'Open', unassigned: 'No app assigned' }
+    : { theme: 'Cambia tema', up: 'Scorri verso l’alto', down: 'Scorri verso il basso', language: 'Cambia lingua', menu: 'Menu', open: 'Apri la selezione', shortOpen: 'Apri', unassigned: 'Nessuna app assegnata' };
   let selected = 0;
   let current = null;
 
@@ -28,8 +28,7 @@ export function mountPhone({ desktop, mobile, open, home }) {
   for (const button of keypad.querySelectorAll('[data-phone-key]')) {
     const key = button.dataset.phoneKey;
     const action = Number(key) >= 1 && Number(key) <= links.length ? labels[Number(key) - 1]
-      : { 6: text.unassigned, 7: text.up, 8: text.down, 9: text.theme, '*': text.back, 0: text.menu, '#': text.language }[key];
-    button.disabled = key === '6' && links.length < 6;
+      : { 6: text.unassigned, 7: text.up, 8: text.down, 9: text.theme, '*': text.menu, 0: text.menu, '#': text.language }[key];
     button.setAttribute('aria-label', `${key}: ${action}`);
     button.title = action;
   }
@@ -106,13 +105,11 @@ export function mountPhone({ desktop, mobile, open, home }) {
 
   shell.addEventListener('click', (event) => {
     if (!mobile.matches) return;
-    const control = event.target.closest('[data-phone-direction], [data-phone-confirm], [data-phone-key], [data-phone-menu], [data-phone-back]');
+    const control = event.target.closest('[data-phone-direction], [data-phone-confirm], [data-phone-key]');
     if (!control || control.disabled) return;
     if (control.hasAttribute('data-phone-direction')) move(control.dataset.phoneDirection);
     else if (control.hasAttribute('data-phone-confirm')) confirm();
     else if (control.hasAttribute('data-phone-key')) key(control.dataset.phoneKey);
-    else if (control.hasAttribute('data-phone-menu')) showMenu();
-    else back();
   });
   icons.addEventListener('focusin', (event) => {
     if (!mobile.matches) return;
@@ -154,8 +151,8 @@ export function mountPhone({ desktop, mobile, open, home }) {
         if (index !== -1) selected = index;
       }
       select(selected);
-      for (const button of shell.querySelectorAll('[data-phone-back]')) button.disabled = !id;
-      shell.querySelector('[data-phone-confirm]').setAttribute('aria-label', id ? text.menu : text.open);
+      for (const button of shell.querySelectorAll('[data-phone-confirm]')) button.setAttribute('aria-label', id ? text.menu : text.open);
+      shell.querySelector('.phone-softkey').textContent = id ? text.menu : text.shortOpen;
       for (const bar of desktop.querySelectorAll('[data-drag]')) bar.tabIndex = mobile.matches ? -1 : 0;
     },
   };

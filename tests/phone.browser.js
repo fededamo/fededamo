@@ -7,7 +7,7 @@
   const icons = [...document.querySelectorAll('.desktop-icons [data-open]')];
   const selected = () => icons.findIndex((icon) => icon.hasAttribute('data-phone-selected'));
   const active = (id) => document.getElementById(id).hasAttribute('data-active');
-  const home = () => document.querySelector('.phone-softkeys [data-phone-menu]').click();
+  const home = () => document.querySelector('.phone-softkeys [data-phone-confirm]').click();
   const key = (value) => keypad.querySelector(`[data-phone-key="${value}"]`).click();
   assert(matchMedia('(max-width: 700px)').matches, 'Use a mobile viewport');
   assert(icons.length === 5 && !document.getElementById('percorso'), 'The redundant background section must be removed');
@@ -15,15 +15,22 @@
   assert([...document.querySelectorAll('h1')].filter((heading) => heading.getClientRects().length).length === 1, 'The menu needs one visible primary heading');
   assert(getComputedStyle(keypad).display !== 'none', 'Physical keys are missing');
   assert(!document.querySelector('.desktop-icons').inert, 'The initial menu must be interactive');
+  const softkey = document.querySelector('.phone-softkey');
+  const openLabel = document.documentElement.lang === 'en' ? 'Open' : 'Apri';
+  assert(softkey.textContent === openLabel, 'The menu action must say Open');
+  softkey.click();
+  assert(active('benvenuto') && softkey.textContent === 'Menu', 'The contextual action must open an app then offer Menu');
+  home();
+  assert(softkey.textContent === openLabel, 'Returning home must restore Open');
   const initialHeight = screen.getBoundingClientRect().height;
   document.querySelector('[data-phone-direction="right"]').click();
   assert(selected() === 1, 'D-pad did not select the next app');
-  document.querySelector('[data-phone-confirm]').click();
+  keypad.querySelector('[data-phone-confirm]').click();
   assert(active('profilo') && shell.hasAttribute('data-reading'), 'Confirm did not open the selected app');
   assert(screen.getBoundingClientRect().height > initialHeight + 100, 'Reading did not expand the screen');
   assert(keypad.inert && getComputedStyle(keypad).display === 'none', 'Reading must retire the hardware keypad');
   assert(document.querySelector('.desktop-icons').inert, 'Covered menu must leave keyboard navigation');
-  document.querySelector('.phone-softkeys [data-phone-back]').click();
+  home();
   assert(!shell.hasAttribute('data-reading') && selected() === 1, 'Back did not restore menu selection');
   assert(!keypad.inert, 'Returning to the menu did not restore the keypad');
   icons[2].focus();
@@ -32,6 +39,10 @@
   document.querySelector('[data-phone-direction="left"]').click();
   document.querySelector('[data-phone-direction="down"]').click();
   assert(selected() === 4, 'D-pad must preserve columns in the shortened app grid');
+  const six = keypad.querySelector('[data-phone-key="6"]');
+  assert(!six.disabled && getComputedStyle(six).opacity === '1', 'Key 6 must look like the other numeric keys');
+  assert(document.querySelectorAll('.phone-softkeys button').length === 1, 'Phone must expose a single contextual action');
+  assert(!document.querySelector('[data-phone-back], [data-phone-menu]'), 'Duplicate Menu/Back controls must be removed');
   key('6');
   assert(!shell.hasAttribute('data-reading'), 'Unassigned key must not launch another app');
   for (const [index, icon] of icons.entries()) {

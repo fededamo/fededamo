@@ -22,7 +22,7 @@
   assert(reduced ? animations.length === 0 : animations.some((animation) => animation.animationName === 'window-open'), 'Window animation does not respect the motion preference');
   await settle();
   if (matchMedia('(max-width: 700px)').matches) {
-    document.querySelector('.phone-softkeys [data-phone-menu]').click();
+    document.querySelector('.phone-softkeys [data-phone-confirm]').click();
   } else {
     document.querySelector('[data-start]').click();
     const menuAnimations = document.querySelector('#start-menu').getAnimations({ subtree: true });

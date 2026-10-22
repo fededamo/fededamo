@@ -33,7 +33,7 @@
       check('.desktop-icon[data-phone-selected]', 'backgroundColor', 'selection');
       document.querySelector('.desktop-icons [data-open="benvenuto"]').click();
       check('#benvenuto .titlebar', 'backgroundColor', 'title');
-      document.querySelector('.phone-softkeys [data-phone-menu]').click();
+      document.querySelector('.phone-softkeys [data-phone-confirm]').click();
     } else {
       check('.window', 'backgroundColor', 'chrome');
       check('.taskbar', 'backgroundColor', 'chrome');

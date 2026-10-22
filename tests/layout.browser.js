@@ -12,15 +12,18 @@
   visible(document.querySelector('[data-theme-select]'));
   if (matchMedia('(max-width: 700px)').matches) {
     assert(desktop.clientHeight >= 140, 'Phone display is too short to use');
+    assert(desktop.scrollHeight <= desktop.clientHeight + 1, 'Phone app menu must fit without scrolling');
     for (const icon of document.querySelectorAll('.desktop-icons [data-open]')) {
-      icon.scrollIntoView({ block: 'nearest' });
       await settle();
+      const rect = icon.getBoundingClientRect();
+      const display = desktop.getBoundingClientRect();
+      assert(rect.top >= display.top && rect.bottom <= display.bottom + 1, 'Every app must be fully visible without scrolling');
       visible(icon);
       icon.click();
       visible(document.querySelector('[data-theme-select]'));
-      const back = document.querySelector('.phone-softkeys [data-phone-back]');
-      visible(back);
-      back.click();
+      const menu = document.querySelector('.phone-softkeys [data-phone-confirm]');
+      visible(menu);
+      menu.click();
     }
   } else {
     const frame = document.querySelector('#benvenuto');
