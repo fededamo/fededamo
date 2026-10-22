@@ -13,14 +13,8 @@
 
   const applyTheme = () => {
     root.dataset.theme = preference ?? (system.matches ? 'dark' : 'light');
-    const button = document.querySelector('[data-theme-toggle]');
-    if (!button) return;
-    const dark = root.dataset.theme === 'dark';
-    button.setAttribute('aria-pressed', String(dark));
-    button.title = dark ? button.dataset.toLight : button.dataset.toDark;
-    button.querySelector('[data-theme-label]').textContent = dark
-      ? button.dataset.dark
-      : button.dataset.light;
+    const select = document.querySelector('[data-theme-select]');
+    if (select) select.value = preference ?? 'system';
   };
 
   applyTheme();
@@ -32,13 +26,14 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => {
-    const button = document.querySelector('[data-theme-toggle]');
-    button.hidden = false;
+    const select = document.querySelector('[data-theme-select]');
+    select.disabled = false;
     applyTheme();
-    button.addEventListener('click', () => {
-      preference = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    select.addEventListener('change', () => {
+      preference = ['light', 'dark'].includes(select.value) ? select.value : null;
       try {
-        localStorage.setItem(key, preference);
+        if (preference) localStorage.setItem(key, preference);
+        else localStorage.removeItem(key);
       } catch {
         // The choice still works for this page when storage is blocked.
       }

@@ -23,7 +23,18 @@ npm run preview
 Il server di sviluppo indica la porta disponibile. La build statica è in `dist/`:
 può essere pubblicata su GitHub Pages, anche sotto il percorso di una repository,
 perché Vite genera collegamenti relativi. La pagina inglese è in `en/`.
-La creazione della repository e la pubblicazione non fanno parte di questa versione.
+
+## Pubblicazione automatica
+
+Il workflow `.github/workflows/deploy.yml` pubblica il sito su GitHub Pages a ogni
+push su `main`; può anche essere avviato manualmente dalla scheda Actions.
+Installa le dipendenze dal lockfile con `npm ci`, esegue `npm run test:unit`,
+genera la build Vite e pubblica esclusivamente `dist/`. Se un controllo o la build
+fallisce, la versione già online rimane disponibile.
+
+La sorgente Pages della repository deve essere impostata su **GitHub Actions**.
+I test browser completi restano nel comando locale `npm test`; il deploy non
+richiede l'installazione di agent-browser sul runner.
 
 ## Verifica automatica
 
@@ -32,10 +43,11 @@ l’interfaccia in un browser reale. Il server temporaneo e la sessione del brow
 vengono chiusi al termine, anche in caso di errore.
 
 La verifica copre entrambe le lingue a 1440×900, 844×320, 701×600, 700×600,
-390×844 e 568×320: controlli visibili e cliccabili, finestre entro l’area desktop,
+390×844, 568×320 e 320×568: controlli visibili e cliccabili, finestre entro l’area desktop,
 menu Start scorrevole e tutte le app raggiungibili nel display del telefono.
 Alle dimensioni desktop e telefono standard esegue anche i controlli completi
-delle interazioni e delle palette chiara/scura.
+delle interazioni, delle palette chiara/scura, delle tre modalità del tema e
+delle animazioni con movimento normale e ridotto.
 
 `npm run test:unit` esegue solo i controlli senza browser;
 `npm run test:browser` genera la build ed esegue solo quelli UI.
@@ -65,8 +77,11 @@ delle interazioni e delle palette chiara/scura.
 - Passando da desktop a mobile si torna al menu; il desktop conserva le finestre
   minimizzate, ripristinabili dalla barra delle applicazioni.
 - La lingua cambia pagina; finestre e posizioni ripartono dallo stato iniziale.
-- Il tema segue inizialmente il sistema. La scelta manuale è salvata localmente
-  e sincronizzata fra le schede. Nessun cookie, analytics o servizio esterno.
+- Il selettore del tema è sempre visibile nella barra desktop e nella barra
+  superiore del telefono: Sistema / Chiaro / Scuro. Sistema segue anche i cambi
+  di tema del dispositivo durante la visita; scegliere di nuovo Sistema elimina
+  la precedente preferenza manuale. Le scelte manuali sono salvate localmente
+  e sincronizzate fra schede e lingue. Nessun cookie, analytics o servizio esterno.
 
 ## Tastiera e accessibilità
 
@@ -77,8 +92,10 @@ ripristina. Sul controllo di ridimensionamento, le frecce cambiano le dimensioni
 Escape chiude la finestra selezionata; nel menu Start chiude il menu. Nel menu,
 frecce, Home ed End spostano il focus tra le voci.
 
-Il movimento ridotto elimina la breve animazione di apertura, senza disattivare
-le interazioni. Senza JavaScript i contenuti restano leggibili in una pagina
+Finestre e menu Start compaiono con brevi animazioni a scatti; i contenuti
+entrano con un piccolo movimento e le icone reagiscono a selezione e pressione.
+Il cambio di tema sfuma brevemente le superfici. La preferenza di sistema
+“Riduci movimento” disattiva queste animazioni e transizioni, mantenendo le interazioni. Senza JavaScript i contenuti restano leggibili in una pagina
 continua. Il CV e i repository non ancora aggiunti sono esplicitamente indisponibili.
 
 ## Struttura

@@ -94,7 +94,11 @@ export function mountPhone({ desktop, mobile, open, home }) {
       open(links[selected].dataset.open);
     } else if (key === '7') scroll(-1);
     else if (key === '8') scroll(1);
-    else if (key === '9') document.querySelector('[data-theme-toggle]').click();
+    else if (key === '9') {
+      const select = document.querySelector('[data-theme-select]');
+      select.value = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     else if (key === '*') back();
     else if (key === '0') showMenu();
     else if (key === '#') document.querySelector('.languages a').click();

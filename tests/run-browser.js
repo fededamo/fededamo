@@ -10,7 +10,7 @@ function browser(args, input) {
     child.stdout.on('data', (data) => { output += data; });
     child.stderr.on('data', (data) => { output += data; });
     child.on('error', reject);
-    child.on('close', (code) => code === 0 ? resolve(output.trim()) : reject(Error(output || `agent-browser exited ${code}`)));
+    child.on('close', (code) => code === 0 ? resolve(output.trim()) : reject(Error(`${args.join(' ')}: ${output || `agent-browser exited ${code}`}`)));
     child.stdin.end(input);
   });
 }
@@ -18,7 +18,7 @@ function browser(args, input) {
 const server = await preview({ preview: { host: '127.0.0.1', port: 0, open: false } });
 try {
   const url = `http://127.0.0.1:${server.httpServer.address().port}`;
-  for (const [width, height] of [[1440, 900], [844, 320], [701, 600], [700, 600], [390, 844], [568, 320]]) {
+  for (const [width, height] of [[1440, 900], [844, 320], [701, 600], [700, 600], [390, 844], [568, 320], [320, 568]]) {
     await browser(['set', 'viewport', String(width), String(height)]);
     for (const path of ['/', '/en/']) {
       await browser(['open', url + path]);
@@ -26,8 +26,13 @@ try {
       if (width === 1440 || width === 390) {
         await browser(['open', url + path]);
         console.log(await browser(['eval', '--stdin'], await readFile(`tests/${width === 1440 ? 'desktop' : 'phone'}.browser.js`, 'utf8')));
+        console.log(await browser(['eval', '--stdin'], await readFile('tests/theme.browser.js', 'utf8')));
+        await browser(['set', 'media', 'dark', 'reduced-motion']);
+        console.log(await browser(['eval', '--stdin'], await readFile('tests/theme.browser.js', 'utf8')));
+        await browser(['set', 'media', 'light']);
         for (const theme of ['light', 'dark']) {
           await browser(['eval', `document.documentElement.dataset.theme = '${theme}'`]);
+          await browser(['eval', 'Promise.all(document.getAnimations().map(animation => animation.finished.catch(() => {})))']);
           console.log(await browser(['eval', '--stdin'], await readFile('tests/palette.browser.js', 'utf8')));
         }
       }

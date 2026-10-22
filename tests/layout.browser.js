@@ -9,6 +9,7 @@
   };
   const settle = () => new Promise(requestAnimationFrame);
   const desktop = document.querySelector('.desktop');
+  visible(document.querySelector('[data-theme-select]'));
   if (matchMedia('(max-width: 700px)').matches) {
     assert(desktop.clientHeight >= 140, 'Phone display is too short to use');
     for (const icon of document.querySelectorAll('.desktop-icons [data-open]')) {
@@ -16,6 +17,7 @@
       await settle();
       visible(icon);
       icon.click();
+      visible(document.querySelector('[data-theme-select]'));
       const back = document.querySelector('.phone-softkeys [data-phone-back]');
       visible(back);
       back.click();

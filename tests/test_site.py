@@ -27,9 +27,10 @@ class SiteTests(unittest.TestCase):
                 page = Page(path)
                 self.assertIn(("html", {"lang": language}), page.elements)
                 self.assertEqual(sum(tag == "h1" for tag, _ in page.elements), 1)
-                controls = [attrs for tag, attrs in page.elements if "data-theme-toggle" in attrs]
+                controls = [attrs for tag, attrs in page.elements if "data-theme-select" in attrs]
                 self.assertEqual(len(controls), 1)
                 self.assertIn("aria-label", controls[0])
+                self.assertEqual([attrs.get("value") for tag, attrs in page.elements if tag == "option"], ["system", "light", "dark"])
                 for tag, attrs in page.elements:
                     if tag == "script" and "src" in attrs:
                         script = ROOT / "public" / attrs["src"].lstrip("/") if attrs["src"].startswith("/") else path.parent / attrs["src"]

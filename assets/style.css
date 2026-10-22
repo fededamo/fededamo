@@ -130,7 +130,8 @@ dd { margin: 0; color: var(--muted); }
 .task-button span { overflow: hidden; text-overflow: ellipsis; }
 .task-button[aria-pressed='true'] { background: var(--surface); font-weight: bold; }
 .tray { display: flex; align-items: center; gap: 12px; margin-left: auto; min-height: 40px; border: 1px solid; border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark); padding: 0 11px; font-size: 12px; }
-.theme-toggle { background: none; border: 0; display: flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; font-size: 12px; }
+.theme-control { display: flex; align-items: center; gap: 5px; color: var(--ink); }
+.theme-control select { font: inherit; font-size: 12px; min-height: 36px; max-width: 105px; padding: 0 4px; color: var(--ink); background: var(--surface); border: 1px solid var(--edge-dark); border-radius: 0; cursor: pointer; }
 .theme-glyph { font-size: 23px; line-height: 1; }
 .languages { display: flex; gap: 8px; align-items: center; }
 .languages a { color: var(--ink); text-underline-offset: 3px; }
@@ -224,14 +225,25 @@ dd { margin: 0; color: var(--muted); }
   .task-button { flex: 0 0 36px; padding: 4px; justify-content: center; }
   .task-button span { display: none; }
   .tray { gap: 7px; padding: 0 6px; }
-  .theme-toggle [data-theme-label] { display: none; }
-  .theme-toggle { min-width: 24px; }
   .languages { gap: 6px; font-size: 11px; }
   .start-menu { bottom: 53px; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .window[data-active] { animation: window-open 140ms steps(3, end); }
-  @keyframes window-open { from { opacity: .7; } to { opacity: 1; } }
+  .window:not([hidden]) { animation: window-open 180ms steps(4, end); }
+  .window:not([hidden]) .window-content { animation: content-in 180ms steps(4, end); }
+  .start-menu:not([hidden]) { animation: window-open 160ms steps(4, end); }
+  .start-menu:not([hidden]) .start-brand { animation: content-in 160ms steps(4, end); }
+  .desktop-icon > .pixel-icon { transition: transform 120ms steps(3, end); }
+  .desktop-icon:hover > .pixel-icon, .desktop-icon:focus-visible > .pixel-icon { transform: translateY(-3px); }
+  .desktop-icon:active > .pixel-icon { transform: translate(1px, 1px) scale(.94); }
+  .phone-shell:not([data-reading]) .desktop-icons { animation: window-open 180ms steps(4, end); }
+  .phone-screen .desktop-icon[data-phone-selected] > .pixel-icon { animation: icon-in 180ms steps(4, end); }
+  .phone-shell, .phone-status, .phone-softkeys, .taskbar, .window, .theme-control select {
+    transition: background-color 160ms, color 160ms, border-color 160ms;
+  }
+  @keyframes window-open { from { opacity: .35; } to { opacity: 1; } }
+  @keyframes content-in { from { opacity: .5; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes icon-in { from { transform: scale(.85); } to { transform: scale(1); } }
 }
 @container (max-width: 600px) {
   [data-desktop-ready] #benvenuto .window-content { display: block; }
